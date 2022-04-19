@@ -14,6 +14,7 @@
 
 Built based on a kdrama example, can be applied to any domain!
 Download data and unzip before running: https://drive.google.com/file/d/1l5wUkxZcUa2Fd6SGhqhs_sdZZesleCNk/view?usp=sharing
+Video demo of driver.py (with previous model saved): https://youtu.be/7zyWgmHuD0w
 
 ## Code Organization
 
