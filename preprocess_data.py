@@ -11,10 +11,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sn
-import PIL
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw
 from tensorflow.keras.preprocessing import image
 import argparse
 
@@ -40,9 +36,11 @@ def create_binary_df(class1_path, class2_path, class1_label, class2_label, all_f
 	full_class2_path = os.path.abspath(class2_path)
 	image_dictionary = {}
 	for file in os.listdir(class1_path):
-		image_dictionary[full_class1_path + '/' + file] = class1_label
+		if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+			image_dictionary[full_class1_path + '/' + file] = class1_label
 	for file in os.listdir(class2_path):
-		image_dictionary[full_class2_path + '/' + file] = class2_label
+		if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+			image_dictionary[full_class2_path + '/' + file] = class2_label
 
 	df = pd.DataFrame(image_dictionary.items(), columns=['img_path', 'truth'])
 	df = df.sample(frac=1).reset_index(drop=True) # shuffle rows in random order
