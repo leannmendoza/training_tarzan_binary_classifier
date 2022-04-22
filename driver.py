@@ -8,65 +8,47 @@ from preprocess_data import *
 from binary_classifier import *
 from analysis import *
 
-def import_data():
+def import_data(c1_path, c2_path, c1_label, c2_label, all_file, train_file, validation_file, test_file, overwrite):
 	"""
 	params: None
 	returns: train_df, test_df, validation_df
 	Collects the data from preconstructed image directories into training/valid/test dfs
 	"""
-	likes_path = "./training_tarzan_data/likes/"
-	dislikes_path = "./training_tarzan_data/dislikes/"
-	truth_df = create_binary_df(likes_path,dislikes_path)
-	train_df, test_df, validation_df = split_data(truth_df)
-	print(train_df, test_df, validation_df)
-	df_to_csv(train_df, "train.csv")
-	df_to_csv(validation_df, "validation.csv")
-	df_to_csv(test_df, "test.csv")
+	truth_df = create_binary_df(c1_path, c2_path, c1_label, c2_label, all_file, overwrite)
+	train_df, test_df, validation_df = split_data(truth_df, train_file, validation_file, test_file, overwrite)
 
-	return train_df, test_df, validation_df
+	return truth_df, train_df, test_df, validation_df
 
-def create_model():
+def create_model(train_file, validation_file, model_file, overwrite):
 	"""
 	params: None
 	returns: tt_model
 	Creates the ML model based on data provided, saves into h5 file and gets predictions
 	"""
-	csvs = ['train.csv', 'validation.csv', 'test.csv']
-	dirs = organize_files(csvs)
-	if not exists('training_tarzan.h5'):
-		model = train_model(dirs[0]+'/', dirs[1]+'/')
-		model.summary()
-	tt_model = keras.models.load_model('training_tarzan.h5')
-	predict_test(tt_model, 'test.csv', save_file = True)
+	model = train_model(train_file, validation_file, model_file, overwrite)
+	return model
 
-	return tt_model
-
-def run_analysis():
+def run_analysis(trained_model, class1_label, class2_label, test_file, predictions_file, overwrite):
 	"""
 	params: None
 	returns: None
 	Runs analysis in our predictions by constructing a confusion matrix as well as auroc curve
 	which allows us to know how accurate our predictions are.
 	"""
-	df = pd.read_csv('predictions.csv')
-	confusion_matrix(df)
-	auroc(df)
+	predict_test(trained_model, class1_label, class2_label, test_file, predictions_file, overwrite)
+	confusion_matrix(predictions_file)
+	auroc(predictions_file)
 
-def sample_images(model):
+
+def sample_images(model, filename, class1_label, class2_label, n):
 	"""
 	params: model
 	returns: None
 	Shows 5 images and the predicted result of the model
 	"""
-	count = 0
-	with open("test.csv") as f:
-		next(f)
-		for line in f:
-			if count > 10:
-				return
-			img_path = line.strip().split(',')[0]
-			predict_image(model, img_path)
-			count += 1
+	df = pd.read_csv(filename)
+	for i in range(n):
+		predict_image(model, df['img_path'][i], class1_label, class2_label)
 
 
 def main():
@@ -82,35 +64,46 @@ def main():
 
 	load_data_msg = 'First lets load our data. We have cute animals and flowers for "likes" and rocks and snakes for "dislikes"...'
 	input(load_data_msg)
-	train_df, test_df, validation_df = import_data()
+	c1_path = './training_tarzan_data/likes/'
+	c2_path = './training_tarzan_data/dislikes/'
+	c1_label = 'likes'
+	c2_label = 'dislikes'
+	all_file = 'all_file.csv'
+	overwrite = False
+	train_file = 'train.csv'
+	validation_file = 'validation.csv'
+	test_file = 'test.csv'
+	model_file = 'model.h5'
+	predictions_file = 'predictions.csv'
+	n_images_to_show = 10
+	truth_df, train_df, test_df, validation_df = import_data(c1_path, c2_path, c1_label, c2_label, all_file, train_file, validation_file, test_file, overwrite)
 
-	see_data_msg = "Now that we have the data loaded, would you like to see the distributions of like and dislike? [Y/N]\n"
-	see_data = input(see_data_msg)
-	if see_data == 'Y':
-		visualize_data(train_df, 'training data')
-		visualize_data(test_df, 'testing data')
-		visualize_data(validation_df, 'validation data')
+	see_data_msg = "Now that we have the data loaded, would you like to see the distributions of like and dislike?\n"
+	input(see_data_msg)
+	visualize_data(truth_df, 'All data', c1_label, c2_label)
+	visualize_data(train_df, 'Training data', c1_label, c2_label)
+	visualize_data(validation_df, 'Validation data', c1_label, c2_label)
+	visualize_data(test_df, 'Testing data', c1_label, c2_label)
 
-	see_imgs_msg = "Let's pull up some images in our data. Shall we? [Y/N]\n"
-	see_imgs = input(see_imgs_msg)
-	if see_imgs== 'Y':	
-		for i in range(10):
-			show_image_with_label(train_df['img_path'][i], train_df['truth'][i])
-
+	see_imgs_msg = "Let's pull up some images in our data. Shall we?\n"
+	input(see_imgs_msg)
+	for i in range(n_images_to_show):
+		show_image_with_label(train_df['img_path'][i], train_df['truth'][i])
 
 	train_model_msg = "Now that we, have seen our data. Let's train our model using tensorflow..."
 	input(train_model_msg)
-	trained_model = create_model()
+	trained_model = create_model(train_file, validation_file, model_file, overwrite)
 
 	analysis_msg = "Great now let's see how tarzan learned!"
 	input(analysis_msg)
-	run_analysis()
+	run_analysis(trained_model, c1_label, c2_label, test_file, predictions_file, overwrite)
 
 	sample_image_predictions = "Now let's see what tarzan thinks of items in our test set..."
 	input(sample_image_predictions)
-	sample_images(trained_model)
+	sample_images(trained_model, predictions_file, c1_label, c2_label, n_images_to_show)
 
 	end_msg = "Thank you for participating in this simulation with Jane and Tarzan!"
+	print(end_msg)
 
 if __name__ == '__main__':
 	main()
