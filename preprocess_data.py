@@ -10,13 +10,13 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sn
 import PIL
 from PIL import Image
 from PIL import ImageFont
-from PIL import ImageDraw 
+from PIL import ImageDraw
+from tensorflow.keras.preprocessing import image
 
-LIKE_COLOR = 'green'
-DISLIKE_COLOR = 'red'
 def create_binary_df(class1_path, class2_path):
 	"""
 	params: class1_path - path to dir containing images belonging to class 1
@@ -35,7 +35,20 @@ def create_binary_df(class1_path, class2_path):
 
 	df = pd.DataFrame(image_dictionary.items(), columns=['img_path', 'truth'])
 	df = df.sample(frac=1).reset_index(drop=True) # shuffle rows in random order
+	print("Data size:", len(df.index), "total images")
 	return df
+
+def make_autopct(values):
+	"""
+	params: values
+	returns: my_autopct
+	Formats data for pie chart with percentage and number
+	"""
+	def my_autopct(pct):
+		total = sum(values)
+		val = int(round(pct*total/100.0))
+		return '{p:.2f}%  ({v:d})'.format(p=pct,v=val)
+	return my_autopct
 
 def visualize_data(df, title):
 	"""
@@ -44,12 +57,13 @@ def visualize_data(df, title):
 	returns: None
 	Creates a bar plot of pandas df "truth" column to show distributation of likes vs. dislikes
 	"""
-	ax = df['truth'].value_counts().plot(kind='barh', color=(DISLIKE_COLOR ,LIKE_COLOR))
-	ax.set_title(title)
-	ax.set_xlabel('Number of Images')
-	ax.set_ylabel('Truth')
+	colors = sn.color_palette("Spectral")
+	ax = plt.pie(df['truth'].value_counts(), labels = ["likes", "dislikes"], colors = colors, autopct=make_autopct(df['truth'].value_counts()))
+	#add overall title to replot
+	plt.title(title)
 	plt.show()
 	return None
+
 
 def print_binary_truth_counts(df, name_of_df):
 	"""
@@ -88,12 +102,12 @@ def show_image_with_label(path_to_image, label):
 	Shows image with label either like or dislike if 'truth' or 'prediction'
 	in label param.
 	"""
-	im = PIL.Image.open(path_to_image)
-	draw = ImageDraw.Draw(im)
-	font = ImageFont.truetype("Arial.ttf", 30)
-	color = 'white'
-	draw.text((10, 10), label, color,font=font)
-	im.show()
+	img1 = image.load_img(path_to_image,target_size=(150,150))
+	plt.imshow(img1)
+	Y = image.img_to_array(img1)
+	X = np.expand_dims(Y,axis=0)
+	plt.xlabel(label,fontsize=10)
+	plt.show()
 	return None
 
 def show_image(path_to_image):
@@ -102,8 +116,11 @@ def show_image(path_to_image):
 	returns: None
 	Shows image on screen
 	"""
-	im = PIL.Image.open(path_to_image)
-	im.show()
+	img1 = image.load_img(path_to_image,target_size=(150,150))
+	plt.imshow(img1)
+	Y = image.img_to_array(img1)
+	X = np.expand_dims(Y,axis=0)
+	plt.show()
 	return None
 
 def df_to_csv(df, csv_file_name):
@@ -114,18 +131,21 @@ def df_to_csv(df, csv_file_name):
 	Creates a csv file from pandas dataframe
 	"""
 	filepath = os.path.abspath(csv_file_name)
-	df.to_csv(filepath, index = False)
+	if not os.path.exists(filepath):
+		print("creating file")
+		df.to_csv(filepath, index=False)
 	return None
 
 def main():
-	likes_path = "./likes/"
-	dislikes_path = "./dislikes/"
-	truth_df = create_binary_df(likes_path,dislikes_path)
+	likes_path = "./training_tarzan_data/likes/"
+	dislikes_path = "./training_tarzan_data/dislikes/"
+	truth_df = create_binary_df(likes_path, dislikes_path)
 	train_df, test_df, validation_df = split_data(truth_df)
 	visualize_data(train_df, 'training data')
 	visualize_data(test_df, 'testing data')
 	visualize_data(validation_df, 'validation data')
-	show_image_with_label(train_df['img_path'][0], train_df['truth'][0])
+	for i in range(10):
+		show_image_with_label(train_df['img_path'][i], train_df['truth'][i])
 	print_binary_truth_counts(train_df, "train_df")
 	df_to_csv(train_df, "train.csv")
 	df_to_csv(validation_df, "validation.csv")
