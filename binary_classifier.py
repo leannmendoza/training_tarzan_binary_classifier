@@ -1,9 +1,15 @@
 """
 author @leannmendoza
 
-These methods are used in the construction of the ml model using tensorflow and keras.
+This file contains the train_model() method which uses a tensorflow 
+written with keras to train a sequential model with adam optimizer. 
+Takes in pre-populated train and validation csv's to contruct the model
+and saves it as an .h5 file. 
 
-* source: https://towardsdatascience.com/10-minutes-to-building-a-binary-image-classifier-by-applying-transfer-learning-to-mobilenet-eab5a8719525
+These parameters can be defined in the clargs when running this code
+independantly.
+
+On command line type $ python binary_classifer.py -h for information on clargs.
 
 Requires python 3.8
 """
@@ -23,9 +29,14 @@ import argparse
 
 def train_model(path_to_train_csv, path_to_validation_csv, model_filename, overwrite):
 	"""
-	params: path_to_train, path_to_validation
-	return: model
-	This function constructs the ml model
+	params: path_to_train_csv - Path to csv containing training data
+			path_to_validation_csv - Path to csv containing validation data
+			model_filename - Path to .h5 file containing model
+			overwrite - boolean denotes if model is to be overwritten if exists
+	return: model - trained model
+	Uses a tensorflow written with keras to train a sequential model with 
+	adam optimizer. Takes in pre-populated train and validation csv's to 
+	contruct the model and saves it as an .h5 file. 
 	"""
 	if os.path.exists(model_filename):
 		if not overwrite:
@@ -91,9 +102,6 @@ def train_model(path_to_train_csv, path_to_validation_csv, model_filename, overw
 
 		model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
 
-
-		#steps_per_epoch = train_imagesize/batch_size
-
 		model.fit(train_dataset,
 				steps_per_epoch = 250,
 				epochs = 10,
@@ -109,24 +117,17 @@ def train_model(path_to_train_csv, path_to_validation_csv, model_filename, overw
 def main():
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('class1_label', type=str, help='Label for images of class1')
-	parser.add_argument('class2_label', type=str, help='Label for images of class2')
 	parser.add_argument('-tr', '--train_filename', type=str, help='Filename to save training csv')
 	parser.add_argument('-v', '--validation_filename', type=str, help='Filename to save validation csv')
-	parser.add_argument('-te', '--test_filename', type=str, help='Filename to save test csv')
 	parser.add_argument('-m', '--model_filename', type=str, help='Filename to save model (.h5 file)')
 	parser.add_argument('-o', '--overwrite', action='store_true', help='Overwrite existing files and model (used for constructing new model)')
 	parser.set_defaults(train_filename="train.csv")
 	parser.set_defaults(validation_filename="validation.csv")
-	parser.set_defaults(test_filename="test.csv")
 	parser.set_defaults(model_filename="model.h5")
 
 	args = parser.parse_args()
-	c1_label = args.class1_label
-	c2_label = args.class2_label
 	train_file = args.train_filename
 	validation_file = args.validation_filename
-	test_file = args.test_filename
 	model_file = args.model_filename
 	overwrite = args.overwrite
 
