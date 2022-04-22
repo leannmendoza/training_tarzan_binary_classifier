@@ -1,3 +1,8 @@
+"""
+author @leannmendoza
+
+Unit tests for functions non-reliant on databases/pre-populated data/files
+"""
 import unittest
 import pandas as pd
 import ctypes
@@ -7,6 +12,7 @@ from analysis import *
 from binary_classifier import *
 
 class TestPreprocessMethods(unittest.TestCase):
+	""" Unit tests for functions non-reliant on databases/pre-populated data/files """
 
 	def test_print_binary_truth_counts1(self):
 		df = pd.DataFrame({'img_path':['a.jpg','b.jpg','c.jpg'],'truth':[0,1,1]})
