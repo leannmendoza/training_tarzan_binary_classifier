@@ -46,7 +46,7 @@ def predict_test(model, class1_label, class2_label, test_filename, predictions_f
 	print("*********************************\n"\
 		  "    Calculating Predictions      \n"\
 		  "*********************************")
-	if os.path.exists("predictions.csv"):
+	if os.path.exists(predictions_filename):
 		if not overwrite:
 			print("Retrieving previously saved predictions...")
 			df = pd.read_csv(predictions_filename)
