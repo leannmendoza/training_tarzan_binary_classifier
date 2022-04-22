@@ -24,6 +24,7 @@ def create_binary_df(class1_path, class2_path, class1_label, class2_label, all_f
 			class2_path - path to dir containing images belonging to class 2
 			class1_label - string name of class1 (1st of 2 classes)
 			class2_label - string name of class2 (2nd of 2 classes)
+			overwrite - boolean denoting if existing files should be overwritten
 	returns: df - dataframe containing 2 columns; image path and the truth
 	Reads in files contained in 2 directories (class1 or class2) and 
 	creates a df with 'img_path' and 'truth' as columns. 
@@ -52,6 +53,7 @@ def create_binary_df(class1_path, class2_path, class1_label, class2_label, all_f
 def split_data(df, train_file, validation_file, test_file, overwrite):
 	"""
 	params: df - master dataframe containing all of the images
+			overwrite - boolean denoting if existing files should be overwritten
 	returns: train, test, validation - resulting dataframes of 85-10-5% split
 	Splits data by 85%, 10%, and 5% to construct the train, test, validation 
 	datasets, respectively, to be parsed into ml model
@@ -86,6 +88,8 @@ def visualize_data(df, title, class1_label, class2_label):
 	"""
 	params: df - dataframe with binary truth values
 			title - title of bar plot
+			class1_label - string name of class1 (1st of 2 classes)
+			class2_label - string name of class2 (2nd of 2 classes)
 	returns: None
 	Creates a bar plot of pandas df "truth" column to show distributation of likes vs. dislikes
 	"""
@@ -154,6 +158,7 @@ def df_to_csv(df, csv_filename, overwrite):
 	"""
 	params: df - dataframe containing image data (path, truth, and/or predictions)
 			csv_filename - desired name to name the new csv file
+			overwrite - boolean denoting if existing files should be overwritten
 	returns: None
 	Creates a csv file from pandas dataframe
 	"""
@@ -200,6 +205,10 @@ def main():
 	visualize_data(train_df, 'Training data', c1_label, c2_label)
 	visualize_data(validation_df, 'Validation data', c1_label, c2_label)
 	visualize_data(test_df, 'Testing data', c1_label, c2_label)
+
+	for i in range(10):
+		show_image_with_label(truth_df['img_path'][i], truth_df['truth'][i])
+
 
 if __name__ == '__main__':
 	main()
