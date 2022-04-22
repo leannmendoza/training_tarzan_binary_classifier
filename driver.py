@@ -14,8 +14,8 @@ def import_data():
 	returns: train_df, test_df, validation_df
 	Collects the data from preconstructed image directories into training/valid/test dfs
 	"""
-	likes_path = "./likes/"
-	dislikes_path = "./dislikes/"
+	likes_path = "./training_tarzan_data/likes/"
+	dislikes_path = "./training_tarzan_data/dislikes/"
 	truth_df = create_binary_df(likes_path,dislikes_path)
 	train_df, test_df, validation_df = split_data(truth_df)
 	print(train_df, test_df, validation_df)
