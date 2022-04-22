@@ -1,8 +1,18 @@
 """
 author @leannmendoza
 
-These methods are used in the extraction and preprocessing of our data
-for our ml functionalites
+Methods included are used as first step for binary image classifier
+by parsing the image data (the images path and class), from a directory.
+From the directory containing the data, it creates a csv file containing
+2 rows 'img_path' and 'truth', randomly arranges it, then splits the data 
+into 85-10-5 split for training, testing, and validation, respectively.
+
+There are also functions that can show the images w or w/o the truth label.
+
+Main method will execute this whole proces described above but functions
+can be used seperately.
+
+On command line type $ python preprocess_data.py -h for information on clargs.
 
 Requires python 3.8
 """
@@ -20,10 +30,13 @@ def create_binary_df(class1_path, class2_path, class1_label, class2_label, all_f
 			class2_path - path to dir containing images belonging to class 2
 			class1_label - string name of class1 (1st of 2 classes)
 			class2_label - string name of class2 (2nd of 2 classes)
+			all_file - path to .csv file to save all data
 			overwrite - boolean denoting if existing files should be overwritten
 	returns: df - dataframe containing 2 columns; image path and the truth
-	Reads in files contained in 2 directories (class1 or class2) and 
-	creates a df with 'img_path' and 'truth' as columns. 
+	Reads in files contained in 2 directories (class1 or class2),
+	creates a df with 'img_path' and 'truth' as columns, 
+	and saves it as a csv file. Overwrite parameter will overwrite the file even if
+	it already exists.
 	"""
 	if os.path.exists(all_file):
 		if not overwrite:
@@ -51,10 +64,14 @@ def create_binary_df(class1_path, class2_path, class1_label, class2_label, all_f
 def split_data(df, train_file, validation_file, test_file, overwrite):
 	"""
 	params: df - master dataframe containing all of the images
+			train_file - path to .csv file to save all training data
+			validation_file - path to .csv file to save all validation data
+			test_file - path to .csv file to save all test data
 			overwrite - boolean denoting if existing files should be overwritten
 	returns: train, test, validation - resulting dataframes of 85-10-5% split
 	Splits data by 85%, 10%, and 5% to construct the train, test, validation 
-	datasets, respectively, to be parsed into ml model
+	datasets, respectively, to be parsed into ml model. Saves all as seperate csv files.
+	Overwrite parameter will overwrite the files even if they already exist.
 	"""
 	if os.path.exists(train_file) and os.path.exists(validation_file) and os.path.exists(test_file):
 		if not overwrite:
@@ -72,9 +89,9 @@ def split_data(df, train_file, validation_file, test_file, overwrite):
 
 def make_autopct(values):
 	"""
-	params: values
-	returns: my_autopct
-	Formats data for pie chart with percentage and number
+	params: values - dataframe that results from df[column].valuecounts()
+	returns: my_autopct - string with percentage and n images per class
+	Formats data as a string for pie chart with percentage and n images per class
 	"""
 	def my_autopct(pct):
 		total = sum(values)
@@ -85,15 +102,14 @@ def make_autopct(values):
 def visualize_data(df, title, class1_label, class2_label):
 	"""
 	params: df - dataframe with binary truth values
-			title - title of bar plot
+			title - string title of bar plot
 			class1_label - string name of class1 (1st of 2 classes)
 			class2_label - string name of class2 (2nd of 2 classes)
 	returns: None
-	Creates a bar plot of pandas df "truth" column to show distributation of likes vs. dislikes
+	Creates a bar plot of pandas df "truth" column to show distributation class1 and class2
 	"""
 	colors = sn.color_palette("Spectral")
 	ax = plt.pie(df['truth'].value_counts(), labels = [class1_label, class2_label], colors = colors, autopct=make_autopct(df['truth'].value_counts()))
-	#add overall title to replot
 	plt.title(title)
 	plt.show()
 	return None
@@ -102,8 +118,8 @@ def visualize_data(df, title, class1_label, class2_label):
 def print_binary_truth_counts(df, name_of_df):
 	"""
 	params: df - dataframe with binary truth values
-			name_of_df - name of the dataframe
-	returns: n_class1, n_class2 - tuple with number of images
+			name_of_df - string name of the dataframe
+	returns: n_class1, n_class2 - tuple with int number of images
 			 in each class
 	Prints the "truth" value counts of the dataframe
 	"""
@@ -126,7 +142,7 @@ def add_none_column(df):
 def show_image_with_label(path_to_image, label):
 	"""
 	params: path_to_image - path to image to be shown
-			label - should be one of the column values in dataframe
+			label - string label should be one of the column values in dataframe
 	returns: None
 	Shows image with label either like or dislike if 'truth' or 'prediction'
 	in label param.
@@ -155,7 +171,7 @@ def show_image(path_to_image):
 def df_to_csv(df, csv_filename, overwrite):
 	"""
 	params: df - dataframe containing image data (path, truth, and/or predictions)
-			csv_filename - desired name to name the new csv file
+			csv_filename - path to .csv file to save df
 			overwrite - boolean denoting if existing files should be overwritten
 	returns: None
 	Creates a csv file from pandas dataframe
