@@ -1,7 +1,13 @@
 """
 author @leannmendoza
 
-These methods are used for the analysis of our ml models. Functions such as confusion matrix and auroc
+These methods are used for the analysis of our binary image classification model.
+This includes methods to visualize results/predictions through a labelled image,
+confusion matrix, and auroc curves/accuracy.
+
+Parameters can be defined in the clargs when running this code independantly.
+
+On command line type $ python analysis.py -h for information on clargs.
 
 Requires python 3.8
 """
@@ -20,8 +26,12 @@ from preprocess_data import add_none_column, df_to_csv, show_image_with_label
 
 def predict_image(model, filename, class1_label, class2_label):
 	"""
-	params: model, filename
-	return: val
+	params: model - Path to trained model .h5 file
+			filename - Path to image file to test model performance
+			class1_label - string name of class1 (1st of 2 classes)
+			class2_label - string name of class2 (2nd of 2 classes)
+	return: val - numerical value (0-1) prediction of model
+				  for image
 	See how the model performs on one image.
 	"""
 	img1 = image.load_img(filename,target_size=(150,150))
@@ -39,8 +49,14 @@ def predict_image(model, filename, class1_label, class2_label):
 
 def predict_test(model, class1_label, class2_label, test_filename, predictions_filename, overwrite):
 	"""
-	params: model, test_filename, save_file=None
-	return: df
+	params: model - Path to trained model .h5 file
+			class1_label - string name of class1 (1st of 2 classes)
+			class2_label - string name of class2 (2nd of 2 classes)
+			test_filename - path to .csv file containing all test data
+							with 2 columns; img_path and truth
+			predictions_filename - path to .csv file to save all predictions
+								   with 3 columns; img_path, truth, and prediction
+	return: df - dataframe containing 3 columns; img_path, truth, and prediction
 	See how the model performs on the independant test set
 	"""
 	print("*********************************\n"\
@@ -51,6 +67,7 @@ def predict_test(model, class1_label, class2_label, test_filename, predictions_f
 			print("Retrieving previously saved predictions...")
 			df = pd.read_csv(predictions_filename)
 			return df
+
 	print('Testing model performance on independant test set...')
 	df = pd.read_csv(test_filename)
 	add_none_column(df)
@@ -59,13 +76,11 @@ def predict_test(model, class1_label, class2_label, test_filename, predictions_f
 		Y = image.img_to_array(img1)
 		X = np.expand_dims(Y,axis=0)
 		val = model.predict(X)[0]
-		# round our results (although mostly 0/1)
 		if val >= 0.5:
 			prediction = class1_label
 		else:
 			prediction = class2_label
 		df.iloc[index, df.columns.get_loc('prediction')] = prediction
-	print(df)
 		
 	df_to_csv(df, predictions_filename, overwrite)
 	print('Predictions saved!')
@@ -73,7 +88,8 @@ def predict_test(model, class1_label, class2_label, test_filename, predictions_f
 
 def confusion_matrix(predictions_file):
 	"""
-	params: df - dataframe that contains image path, truth and model predictions
+	params: predictions_filename - path to .csv file to save all predictions
+								   with 3 columns; img_path, truth, and prediction
 	returns: confusion matrix with tp, tn, fp, fn results from our data
 	Constructs a confusion matrix (df) from our results
 	"""
@@ -86,7 +102,8 @@ def confusion_matrix(predictions_file):
 
 def auroc(predictions_file):
 	"""
-	params: df - dataframe that contains image path, truth and model predictions
+	params: predictions_filename - path to .csv file to save all predictions
+								   with 3 columns; img_path, truth, and prediction
 	returns: auc - accuracy value of our model predictions on independant test set
 	Calculates and graphs AUC 
 	"""
