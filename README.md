@@ -1,4 +1,5 @@
 
+
 # Training Tarzan: A Machine Learning Simulation (Based on Netflix’s Start-Up)
 **Author:** LeAnn Mendoza, MSDS Align <br>
 **Course:** DS5010: Intro to Programming for Data Science <br>
@@ -46,3 +47,25 @@ This program simulates Do-San’s Tarzan analogy of machine learning  [(link to 
 https://youtu.be/mr0AFYVnB3s
 
 ## Code Organization
+
+    .
+    |-README.md
+    |-driver.py
+    |-preprocess_data.py
+    |-binary_classifier.py
+    |-analysis.py
+    |-requirements.txt
+    |-__init__.py
+    |-unit_tests.py
+    |-training_tarzan_data
+    | |-likes
+    | | |-16209331331_343c899d38.jpg
+    | | |-2ba808b11e2e7302c65c1142fae20328.jpg
+    | | |-6204049536_1ac4f09232_n.jpg
+    | | |...
+    | |-dislikes
+    | | |-16209331331_343c899d38.jpg
+    | | |-2ba808b11e2e7302c65c1142fae20328.jpg
+    | | |-6204049536_1ac4f09232_n.jpg
+    | | |...
+
