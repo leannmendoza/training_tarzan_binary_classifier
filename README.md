@@ -20,6 +20,7 @@ This program simulates Do-San’s Tarzan analogy of machine learning  [(link to 
 
  3.   Quickly pull up on image and its label (truth and/or predictions) at any point in the process
  4.   Analysis tools and visualizations such as confusion matricies and auroc curves.
+ 5.   Files can be used simultaneously (using driver code) or independantly using command line arguments ($ python analysis.py -h for clargs)
 
 ## Set-up Overview
 
