@@ -7,7 +7,7 @@
 **Campus:** Northeastern University, Silicon Valley <br>
 
 
-![enter image description here](https://i.pinimg.com/736x/fb/1e/61/fb1e614e08c98115853f8194c521ccfa.jpg)
+![dosan and dalmi](https://cdn-images-1.medium.com/max/1024/1*xA00qiQggxF-JfRUzihkww.png)
 # Package Description
 
 This program simulates Do-San’s Tarzan analogy of machine learning  [(link to clip)](https://youtube.com/clip/Ugkxs_VCFjTgGugzAIkanCq1qtxetKY99Vog)  using a Tensorflow binary image classifier. The purpose of this project is to simulate the concept of machine learning using deep learning and image classification.
@@ -70,3 +70,4 @@ https://youtu.be/mr0AFYVnB3s
     | | |-6204049536_1ac4f09232_n.jpg
     | | |...
 
+![ml love](https://miro.medium.com/max/1200/0*rPGne6i2k7bHqnzp)
