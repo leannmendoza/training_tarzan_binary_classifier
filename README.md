@@ -14,7 +14,7 @@ This program simulates Do-San’s Tarzan analogy of machine learning  [(link to 
 ## Features
 
  1.   [Driver program](https://github.com/leannmendoza/training_tarzan_binary_classifier/blob/main/driver.py) walks the user interactively through the ML process from data preprocessing, to training, and analyzing results.
-		 - [Video demo of driver.py](https://youtu.be/7zyWgmHuD0w)
+		 - [Video demo of driver.py](https://youtu.be/mr0AFYVnB3s)
  2.   Visualizations of class distributions as a pie chart
 
  3.   Quickly pull up on image and its label (truth and/or predictions) at any point in the process
@@ -43,6 +43,6 @@ This program simulates Do-San’s Tarzan analogy of machine learning  [(link to 
 
 ## Video Tutorial
 
-https://youtu.be/7zyWgmHuD0w
+https://youtu.be/mr0AFYVnB3s
 
 ## Code Organization
